@@ -1,0 +1,43 @@
+{
+  int x;
+  int y;
+  int z;
+  int k;
+  int m;
+  int n;
+  int p;
+
+  x = 7;
+
+  // --- strength-reduction cases ---
+
+  // x * 2^n  -->  SHL
+  y = x * 4;      // 4 = 2^2
+
+  // x * (2^n + 1)  -->  SHL then ADD
+  z = x * 5;      // 5 = 2^2 + 1
+
+  // x * (2^n - 1)  -->  SHL then SUB
+  k = x * 3;      // 3 = 2^2 - 1
+
+  // should NOT be optimized (not 2^n or 2^n ± 1)
+  m = x * 6;      // 6 = 2 * 3, just a normal MUL
+
+  // power-of-two constant on the *left* side
+  n = 8 * x;      // 8 = 2^3
+
+  // if you also added the 2^-n / divide-by-2^n optimization,
+  // this will become a SHR; otherwise it stays DIV.
+  p = x / 8;      // x / 2^3
+
+  // --- array + loop to show codegen + indexing still work ---
+
+  int i;
+  int a[4];
+
+  i = 0;
+  while (i - 4) {   // loop while i != 4
+    a[i] = i * 4;   // another x * 2^n inside a store
+    i = i + 1;
+  }
+}

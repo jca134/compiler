@@ -1,0 +1,9 @@
+.gradle/
+build/
+bin/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+src/main/antlr/.antlr/
+src/main/java/compiler/grammar/

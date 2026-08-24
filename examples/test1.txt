@@ -1,0 +1,19 @@
+{
+    int a;
+    float b;
+    int c;
+
+    a = 5;
+    b = 3.2;
+    c = a + 4;
+
+    int x[3][2];
+    x[1][0] = c;
+
+    {
+        float a;
+        a = b + 1.5;
+    }
+
+    b = c * a;
+}

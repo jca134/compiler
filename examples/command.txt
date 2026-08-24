@@ -1,0 +1,14 @@
+./gradlew run --args="examples/test1.txt"
+./gradlew runParser -Pargs="examples/test2.txt"
+
+# Select Java 21 on macOS before running the tests.
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+
+# Run all automated tests.
+./gradlew test
+
+# Run the tests with detailed terminal output.
+./gradlew test --info
+
+# Open the generated HTML test report on macOS.
+open build/reports/tests/test/index.html

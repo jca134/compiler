@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'application'
+}
+
+group = 'edu.example'
+version = '1.0-SNAPSHOT'
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+repositories { mavenCentral() }
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.13.1'
+    implementation 'org.antlr:antlr4-runtime:4.13.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+tasks.named('generateGrammarSource', org.gradle.api.plugins.antlr.AntlrTask).configure {
+    arguments += ['-visitor']
+    outputDirectory = file("$buildDir/generated-src/antlr/main")
+}
+
+// Gradle compiles fresh parser classes from src/main/antlr; exclude any
+// repository-retained generated classes if they are present.
+sourceSets.main.java.exclude('compiler/grammar/**')
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+test { useJUnitPlatform() }
+
+application { mainClass = 'compiler.Main' }
+
+// Both Main and ParserMain fall back to reading a program from stdin when no
+// file argument is given, so forward Gradle's stdin through to the child JVM.
+tasks.named('run', JavaExec).configure {
+    standardInput = System.in
+}
+
+tasks.register('runParser', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'compiler.ParserMain'
+    standardInput = System.in
+    if (project.hasProperty('args')) {
+        args project.args.split(' ')
+    }
+}
